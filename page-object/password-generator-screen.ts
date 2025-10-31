@@ -1,13 +1,10 @@
-import {expect, type Locator, type Page} from '@playwright/test'
+import {expect, type Locator, type Page, test} from '@playwright/test'
 
 export class PasswordGenerator {
-    readonly page: Page;
-    constructor(page:Page){
-        this.page = page;
-    }
+    constructor(private readonly page: Page) {}
 
     async navigateToLastPassPasswordGenerator() {
-        await this.page.goto('https://www.lastpass.com/password-generator');
+        await this.page.goto('https://www.lastpass.com/features/password-generator#generatorTool');
     }
 
     async verifyPasswordGeneratorSection() {
@@ -66,5 +63,64 @@ export class PasswordGenerator {
         
         // Verify the button is visible
         await expect(copyPasswordButton).toBeVisible();
+    }
+
+    async passwordLength(targetPercentage: number) {
+        test.slow();
+        await this.page.waitForTimeout(30000);
+    
+        // Locate the slider bar and slider button
+        const bar = this.page.locator('.lp-custom-range__bar');
+        const slider = this.page.locator('.lp-custom-range__bar > button.lp-custom-range__slider');
+    
+        // Get the bounding box of the slider bar
+        const barBox = await bar.boundingBox();
+        if (!barBox) {
+            throw new Error('Slider bar not found');
+        }
+    
+        // Get the current slider position
+        const currentX = parseFloat((await slider.getAttribute('style'))?.match(/translateX\((.*?)px\)/)?.[1] || '0');
+    
+        // Calculate the target position based on the percentage
+        const targetX = barBox.x + (barBox.width * targetPercentage) / 100;
+        const targetY = barBox.y + barBox.height / 2;
+    
+        // Directly click at the calculated position
+        await bar.click({ position: { x: targetX - barBox.x, y: targetY - barBox.y } });
+    
+        // Verify the slider's position has been updated
+        const updatedX = parseFloat((await slider.getAttribute('style'))?.match(/translateX\((.*?)px\)/)?.[1] || '0');
+        console.log(`Slider position before: ${currentX}px, after: ${updatedX}px`);
+    
+        // Assert the slider's position has been updated
+        if (updatedX === currentX) {
+            throw new Error('Slider position did not update');
+        }
+    }
+    async generateRandomPassword() {
+        test.slow();
+        await this.page.waitForTimeout(30000);
+        // Locate the "Generate" button
+        const generateButton = this.page.locator('.lp-pg-generated-password__icon.lp-pg-generated-password__icon-generate.lp-webbtn')
+        
+        // Click the "Generate" button
+        await generateButton.click({force: true});
+        await this.page.waitForTimeout(10000);
+    
+        // Wait for the generated password to appear in the input field
+        const passwordInput = this.page.locator('input#GENERATED-PASSWORD');
+        await this.page.waitForSelector('input#GENERATED-PASSWORD', { state: 'attached' });
+    
+        // Retrieve the value of the generated password
+        const generatedPassword = await passwordInput.inputValue();
+    
+        // Log the generated password to the console
+        console.log(`Generated Password: ${generatedPassword}`);
+    
+        // Ensure the password is not empty
+        if (!generatedPassword) {
+            throw new Error('Generated password is empty');
+        }
     }
 }
