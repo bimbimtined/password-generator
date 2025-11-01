@@ -37,17 +37,20 @@ Setup Instructions
 - npx playwright test e2e.spec.ts
 <img width="1001" height="435" alt="image" src="https://github.com/user-attachments/assets/958fcf4e-5970-4a11-a607-7ff71f479601" />
 
-5. To view report in Allure
+5. To view report in HTML
+- npx playwright show-report
+
+6. To view report in Allure
 - npx allure generate allure-results --clean -o allure-report && npx allure open allure-report
 
 Notes:
-- Page Onject Model (POM) - design used to separate page logic from test logic.
+- Page Object Model (POM) - design used to separate page logic from test logic.
 - Meaningful selectors for reliability.
 - Clear naming convention and structure to make future test additions straightforward.
 
 Author:
 Kriselle Tined
-https://github.com/bimbimtined
+https://github.com/bimbimtined <p>&copy; 2025 ktined</p>
        
 
 
