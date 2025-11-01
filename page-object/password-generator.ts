@@ -1,4 +1,9 @@
+/**
+ * Copyright (c) 2025 ktined
+ */
 import {expect, type Locator, type Page, test} from '@playwright/test'
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class PasswordGenerator {
     constructor(private readonly page: Page) {}
@@ -100,7 +105,7 @@ export class PasswordGenerator {
     }
     async generateRandomPassword() {
         test.slow();
-        await this.page.waitForTimeout(30000);
+        await this.page.waitForTimeout(10000);
         // Locate the "Generate" button
         const generateButton = this.page.locator('.lp-pg-generated-password__icon.lp-pg-generated-password__icon-generate.lp-webbtn')
         
@@ -122,5 +127,126 @@ export class PasswordGenerator {
         if (!generatedPassword) {
             throw new Error('Generated password is empty');
         }
+    }
+
+    async characterUsed() {
+        test.slow();
+        // Locate the "Uppercase" checkbox
+        await this.page.locator('.lp-checkbox__label').locator('text=Uppercase').isChecked();
+    
+        // Uncheck the "Lowercase" checkbox
+        const lowercaseCheckbox = this.page.locator('.lp-checkbox__label').locator('text=Lowercase');
+        await lowercaseCheckbox.waitFor({ state: 'visible' }); // Ensure it's visible
+        await lowercaseCheckbox.click();
+
+        // Uncheck the "Numbers" checkbox
+        const numbersCheckbox = this.page.locator('.lp-checkbox__label').locator('text=Numbers');
+        await numbersCheckbox.waitFor({ state: 'visible' }); // Ensure it's visible
+        await numbersCheckbox.click();
+
+        // Uncheck the "Symbols" checkbox (corrected locator)
+        const symbolsCheckbox = this.page.locator('.lp-checkbox__label').locator('text=Symbols');
+        await symbolsCheckbox.waitFor({ state: 'visible' }); // Ensure it's visible
+        await symbolsCheckbox.click();
+        await this.page.waitForTimeout(15000);
+
+        const passwordInput = this.page.locator('input#GENERATED-PASSWORD');
+        // Wait for the input field to be attached
+        await this.page.waitForSelector('input#GENERATED-PASSWORD', { state: 'attached' });
+
+        // Retrieve the value of the generated password
+        const generatedPassword = await passwordInput.inputValue();
+
+        // Log the generated password
+        console.log(`Generated Password: ${generatedPassword}`);
+
+        // Check if the password is all uppercase
+        if (!/^[A-Z]+$/.test(generatedPassword)) {
+            throw new Error('Generated password is not all uppercase');
+        } else {
+            console.log('The generated password is all uppercase.');
+        }
+    
+        // Check the "Lowercase" checkbox
+        const lowercase1Checkbox = this.page.locator('.lp-checkbox__label').locator('text=Lowercase');
+        await lowercase1Checkbox.waitFor({ state: 'visible' }); // Ensure it's visible
+        await lowercase1Checkbox.click();
+        await this.page.waitForTimeout(15000);
+
+        // Locate the "Uppercase" checkbox
+        await this.page.locator('.lp-checkbox__label').locator('text=Uppercase').click();
+
+        const passwordInput_01 = this.page.locator('input#GENERATED-PASSWORD');
+        // Wait for the input field to be attached
+        await this.page.waitForSelector('input#GENERATED-PASSWORD', { state: 'attached' });
+
+        // Retrieve the value of the generated password
+        const generatedPassword_01 = await passwordInput_01.inputValue();
+
+        // Log the generated password
+        console.log(`Generated Password: ${generatedPassword_01}`);
+
+        // Check if the password is all lowercase
+        if (!/^[a-z]+$/.test(generatedPassword_01)) {
+            throw new Error('Generated password is not all lowercase');
+        } else {
+            console.log('The generated password is all lowercase.');
+        }
+
+        // Check the "Numbers" checkbox
+        const numbersCheckbox_01 = this.page.locator('.lp-checkbox__label').locator('text=Numbers');
+        await numbersCheckbox_01.waitFor({ state: 'visible' }); // Ensure it's visible
+        await numbersCheckbox_01.click();
+        await this.page.waitForTimeout(15000);
+
+        // Locate the "Lowercase" checkbox
+        await this.page.locator('.lp-checkbox__label').locator('text=Lowercase').click();
+
+        const passwordInput_02 = this.page.locator('input#GENERATED-PASSWORD');
+        // Wait for the input field to be attached
+        await this.page.waitForSelector('input#GENERATED-PASSWORD', { state: 'attached' });
+
+        // Retrieve the value of the generated password
+        const generatedPassword_02 = await passwordInput_02.inputValue();
+
+        // Log the generated password
+        console.log(`Generated Password: ${generatedPassword_02}`);
+
+        // Check if the password is all numbers
+        if (!/^[0-9]+$/.test(generatedPassword_02)) {
+            throw new Error('Generated password is not all numbers');
+        } else {
+            console.log('The generated password is all numbers.');
+        }
+    }
+
+    async copyPasswordToTextfile() {
+        test.slow();
+        await this.page.waitForTimeout(10000);
+    
+        // Locate the "Copy password" button
+        const copyPasswordButton = this.page.getByRole('button', { name: 'Copy password' });
+
+        // Click the "Copy password" button
+        await copyPasswordButton.click();
+
+        // Wait for the generated password to appear in the input field
+        const passwordInput = this.page.locator('input#GENERATED-PASSWORD');
+        await passwordInput.waitFor({ state: 'visible' });
+
+        // Retrieve the value of the generated password
+        const generatedPassword = await passwordInput.inputValue();
+
+        // Ensure the password is not empty
+        if (!generatedPassword) {
+            throw new Error('Generated password is empty');
+        }
+        // Define the file path where the password will be saved
+        const filePath = path.join(__dirname, 'generated-password.txt');
+
+        // Write the password to the file
+        fs.writeFileSync(filePath, generatedPassword, 'utf8');
+
+        console.log(`Password saved to file: ${filePath}`);
     }
 }

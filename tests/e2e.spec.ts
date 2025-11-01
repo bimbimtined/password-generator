@@ -1,5 +1,9 @@
+/**
+ * Copyright (c) 2025 ktined
+ */
+
 import { test, expect } from '@playwright/test';
-import { PasswordGenerator } from '../page-object/password-generator-screen';
+import { PasswordGenerator } from '../page-object/password-generator';
 
 test.describe('E2E Tests', () => {
   test.beforeEach('TC_Navigate to Password Generator Site', async ({ page }) => {
@@ -21,5 +25,15 @@ test.describe('E2E Tests', () => {
   test('TC_03_Generate a password', async ({ page }) => {
     const generatePassword = new PasswordGenerator(page)
     await generatePassword.generateRandomPassword()
+  });
+
+  test('TC_04_Characters Used - Set Controls', async ({ page }) => {
+    const characterused = new PasswordGenerator(page)
+    await characterused.characterUsed()
+  });
+
+  test('TC_05_Copy password - to text file', async ({ page }) => {
+    const copyPassword = new PasswordGenerator(page)
+    await copyPassword.copyPasswordToTextfile()
   });
 });
