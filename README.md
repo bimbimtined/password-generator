@@ -35,6 +35,7 @@ Setup Instructions
 
 4. To run the script, type the script in the terminal
 - npx playwright test e2e.spec.ts
+- or npx playwright test e2e.spec.ts --headed
 <img width="1001" height="435" alt="image" src="https://github.com/user-attachments/assets/958fcf4e-5970-4a11-a607-7ff71f479601" />
 
 5. To view report in HTML
