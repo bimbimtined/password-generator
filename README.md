@@ -54,9 +54,9 @@ For windows user: npx playwright test e2e.spec.ts --reporter=allure-playwright
 - npx playwright show-report
 
 6. To view report in Allure (Optional)
-Mac users: npx allure generate allure-results --clean -o allure-report && npx allure open allure-report
+Mac and windows users: In the terminal type allure serve
+<img width="247" height="23" alt="image" src="https://github.com/user-attachments/assets/dd0db621-3253-441c-84df-b03673e28ddc" />
 
-windows users: allure serve
 
 Notes:
 - Page Object Model (POM) - design used to separate page logic from test logic.
