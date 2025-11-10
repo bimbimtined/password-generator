@@ -19,7 +19,7 @@ test.describe('E2E Tests', () => {
 
   test('TC_02_Set password length', async ({ page }) => {
     const adjustLength = new PasswordGenerator(page)
-    await adjustLength.passwordLength(50)
+    await adjustLength.passwordLength(13)
   });
 
   test('TC_03_Generate a password', async ({ page }) => {
